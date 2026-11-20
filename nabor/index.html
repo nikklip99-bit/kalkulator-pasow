@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2b3440">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Дистанции">
+<title>Дистанции</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{--bg:#eef1f4;--panel:#fff;--ink:#1a2028;--mute:#5b6672;--line:#d5dbe1;--steel:#2b3440;--acc:#e4572e;--bad:#d62828;--ok:#2e7d4f}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+.bar{position:sticky;top:0;z-index:5;background:var(--steel);color:#fff;padding:env(safe-area-inset-top) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));display:flex;align-items:center;min-height:calc(54px + env(safe-area-inset-top))}
+.bar h1{flex:1;margin:0;font-size:19px;font-weight:700}
+.ib{background:transparent;border:0;color:#fff;min-width:48px;min-height:48px;font-size:26px;cursor:pointer;border-radius:8px}
+.menu{position:fixed;z-index:9;right:max(12px,env(safe-area-inset-right));top:calc(54px + env(safe-area-inset-top));background:var(--panel);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden;min-width:190px}
+.menu button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:14px 18px;font-weight:600;font-size:18px;font-family:inherit;color:var(--ink);cursor:pointer}
+.menu button:last-child{border-bottom:0}
+.veil{position:fixed;inset:0;z-index:8}
+main{max-width:520px;margin:0 auto;padding:18px 14px calc(30px + env(safe-area-inset-bottom))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+label{display:block;font-weight:600;font-size:16px;margin-bottom:5px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+input{width:100%;font-weight:600;font-size:21px;font-family:inherit;padding:10px 10px;min-height:54px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+input.bad{border-color:var(--bad);background:#fde8e8;color:var(--bad)}
+.go{width:100%;font-weight:700;font-size:21px;font-family:inherit;min-height:58px;border:0;border-radius:10px;background:var(--acc);color:#fff;cursor:pointer}
+.go:disabled{opacity:.6}
+.sec{font-weight:700;font-size:19px;font-family:inherit;margin:0 0 8px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.sec span{color:var(--mute);font-weight:600;font-size:16px;white-space:nowrap}
+.sets{list-style:none;margin:0;padding:0}
+.sets li{display:flex;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:18px;align-items:baseline}
+.sets li:first-child{border-top:0}
+.q{font-weight:800;color:var(--acc);white-space:nowrap;min-width:3.6em}
+.empty{color:var(--mute);margin:0}
+.msg{padding:12px 14px;border-radius:10px;background:#fde8e8;color:var(--bad);font-weight:600;margin-bottom:14px}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:14px;color:var(--mute);text-align:left;font-weight:600;padding:0 4px 6px}
+.tbl td{padding:4px}
+.x{background:none;border:0;color:var(--mute);font-size:26px;min-width:44px;min-height:44px;cursor:pointer}
+.ghost{width:100%;min-height:50px;border:2px solid var(--line);border-radius:10px;background:none;font-weight:600;font-size:17px;font-family:inherit;color:var(--ink);cursor:pointer;margin:10px 0}
+.st{font-size:15px;color:var(--mute);margin:8px 0 0;min-height:1.4em}.st.ok{color:var(--ok)}.st.err{color:var(--bad)}
+.hist{list-style:none;margin:0;padding:0}
+.hist li{padding:10px 0;border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
+.hist li:first-child{border-top:0}
+.hist .d{color:var(--mute);font-size:14px;grid-column:1/-1}
+.hist .v{font-size:17px}.hist .n{font-weight:800;color:var(--acc);font-size:20px;white-space:nowrap}
+.dlg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+.dlg .card{width:100%;max-width:340px;margin:0}
+.row{display:flex;gap:10px;margin-top:12px}.row button{flex:1}
+[hidden]{display:none!important}
+</style></head><body>
+<div class="bar"><h1 id="title"></h1><button class="ib" id="back" hidden aria-label="Назад">←</button><button class="ib" id="burger" aria-label="Меню">☰</button></div>
+<div class="veil" id="veil" hidden></div>
+<nav class="menu" id="menu" hidden><button data-go="stock">Склад</button><button data-go="hist">История</button></nav>
+
+<main>
+<section id="v-calc">
+ <form class="card" id="f" autocomplete="off">
+  <div class="g3">
+   <div><label for="t">Толщина</label><input id="t" inputmode="decimal" value="0"></div>
+   <div><label for="w">Ширина</label><input id="w" inputmode="decimal" value="0"></div>
+   <div><label for="n">Кол-во</label><input id="n" inputmode="numeric" value="0"></div>
+  </div>
+  <button class="go" id="go" type="submit">Рассчитать</button>
+ </form>
+ <div id="err" class="msg" hidden></div>
+ <div class="card"><h2 class="sec">Чётное <span id="sa"></span></h2><ul class="sets" id="ra"><li class="empty">—</li></ul></div>
+ <div class="card"><h2 class="sec">Нечётное <span id="sb"></span></h2><ul class="sets" id="rb"><li class="empty">—</li></ul></div>
+</section>
+
+<section id="v-stock" hidden>
+ <div class="card">
+  <table class="tbl"><thead><tr><th>Размер, мм</th><th>Кол-во, шт</th><th></th></tr></thead><tbody id="rings"></tbody></table>
+  <button class="ghost" id="add" type="button">+ Добавить кольцо</button>
+  <button class="go" id="save" type="button">Сохранить</button>
+  <p class="st" id="sst"></p>
+ </div>
+</section>
+
+<section id="v-hist" hidden>
+ <div class="card">
+  <ul class="hist" id="hl"><li class="empty">Загрузка…</li></ul>
+  <button class="ghost" id="reload" type="button">Обновить</button>
+  <p class="st" id="hst"></p>
+ </div>
+</section>
+</main>
+
+<div class="dlg" id="pin" hidden><form class="card" id="pf"><label for="pi">PIN-код</label><input id="pi" inputmode="numeric" type="password" autocomplete="off"><p class="st err" id="pe"></p><div class="row"><button type="button" class="ghost" id="pc">Отмена</button><button class="go" type="submit">OK</button></div></form></div>
+<script>
+function combos(sizes,stock,t,cap){const res=[];const cur=new Array(sizes.length).fill(0);let over=false;
+ (function rec(i,rem){if(over)return;if(rem===0){res.push(cur.slice());if(res.length>cap)over=true;return;}if(i===sizes.length)return;
+  const s=sizes[i];const mx=Math.min(Math.floor(rem/s),stock[i]);
+  for(let k=mx;k>=0;k--){cur[i]=k;rec(i+1,rem-k*s);}cur[i]=0;})(0,t);return {list:res,over};}
+function lpMax(A,b,c){const m=A.length,n=c.length,W=n+m+1;const T=[];
+ for(let i=0;i<m;i++){const r=new Float64Array(W);for(let j=0;j<n;j++)r[j]=A[i][j];r[n+i]=1;r[W-1]=b[i];T.push(r);}
+ const z=new Float64Array(W);for(let j=0;j<n;j++)z[j]=-c[j];const basis=[...Array(m)].map((_,i)=>n+i);
+ for(let it=0;it<20000;it++){let e=-1;for(let j=0;j<W-1;j++)if(z[j]<-1e-9){e=j;break;}if(e<0)break;
+  let l=-1,best=Infinity;for(let i=0;i<m;i++)if(T[i][e]>1e-9){const q=T[i][W-1]/T[i][e];if(q<best-1e-12||(Math.abs(q-best)<=1e-12&&basis[i]<basis[l])){best=q;l=i;}}
+  if(l<0)return {v:Infinity,x:new Float64Array(n)};const p=T[l][e];for(let j=0;j<W;j++)T[l][j]/=p;
+  for(let i=0;i<m;i++)if(i!==l&&T[i][e]!==0){const f=T[i][e];for(let j=0;j<W;j++)T[i][j]-=f*T[l][j];}
+  const f=z[e];for(let j=0;j<W;j++)z[j]-=f*T[l][j];basis[l]=e;}
+ const x=new Float64Array(n);for(let i=0;i<m;i++)if(basis[i]<n)x[basis[i]]=T[i][W-1];return {v:z[W-1],x};}
+function plan(sizes,stock,tA,tB,limit){
+ const cA=combos(sizes,stock,tA,4000),cB=combos(sizes,stock,tB,4000);
+ const A=cA.list,B=cB.list;if(!A.length||!B.length)return{N:0,proven:true,A,B};
+ const k=sizes.length,nA=A.length,nB=B.length;
+ const rows=[];for(let i=0;i<k;i++)rows.push([...A.map(c=>c[i]),...B.map(c=>c[i])]);
+ rows.push([...A.map(()=>1),...B.map(()=>-1)]);
+ const lp=lpMax(rows,[...stock,0],[...A.map(()=>1),...B.map(()=>0)]);
+ let ub=Math.min(Math.floor(lp.v+1e-6),limit);
+ const w=sizes.map((s,i)=>1/(stock[i]+0.5)),sc=c=>c.reduce((a,v,i)=>a+v*w[i],0);
+ const pa=new Map(A.map((c,i)=>[c,lp.x[i]])),pb=new Map(B.map((c,i)=>[c,lp.x[nA+i]]));
+ const orders=[[A.slice().sort((x,y)=>(pa.get(y)-pa.get(x))||sc(x)-sc(y)),B.slice().sort((x,y)=>(pb.get(y)-pb.get(x))||sc(x)-sc(y))],
+  [A.slice().sort((x,y)=>sc(x)-sc(y)),B.slice().sort((x,y)=>sc(x)-sc(y))]];
+ const t0=Date.now();let proven=true;
+ for(let N=ub;N>0;N--){let allTo=true;for(const [A,B] of orders){const st=stock.slice(),pick=[],fail=new Set();let nodes=0,to=false;const dl=Date.now()+Math.max(250,1500-(Date.now()-t0)/6);
+  const fits=c=>{for(let i=0;i<k;i++)if(c[i]>st[i])return false;return true};
+  const dfs=(ra,rb,mi)=>{if(!ra&&!rb)return true;if(++nodes%4000===0&&Date.now()>dl)to=true;if(to)return false;
+   let L=0;for(let i=0;i<k;i++)L+=st[i]*sizes[i];if(L<ra*tA+rb*tB)return false;
+   const key=st.join()+'|'+ra+'|'+rb+'|'+mi;if(fail.has(key))return false;const Ls=ra?A:B;
+   for(let j=mi;j<Ls.length;j++){const c=Ls[j];if(!fits(c))continue;for(let i=0;i<k;i++)st[i]-=c[i];pick.push(c);
+    if(ra?dfs(ra-1,rb,ra>1?j:0):dfs(0,rb-1,j))return true;pick.pop();for(let i=0;i<k;i++)st[i]+=c[i];if(to)return false;}
+   fail.add(key);return false};
+  if(dfs(N,N,0))return{N,proven,ub,A:pick.slice(0,N),B:pick.slice(N),left:st,over:cA.over||cB.over};
+  if(!to){allTo=false;break;}}
+  if(allTo)proven=false;}
+ return{N:0,proven,ub,A:[],B:[],left:stock.slice()};}
+function findSets(sizes,stock,tA,tB,N,ms){
+ const cA=combos(sizes,stock,tA,4000).list,cB=combos(sizes,stock,tB,4000).list;const k=sizes.length;
+ if(!cA.length||!cB.length)return null;
+ const pcs=c=>c.reduce((a,b)=>a+b,0);
+ const fitN=(c,st,n)=>{for(let i=0;i<k;i++)if(c[i]*n>st[i])return false;return true};
+ let best=null;
+ for(const a of cA){if(!fitN(a,stock,N))continue;const st=stock.map((v,i)=>v-a[i]*N);
+  for(const b of cB){if(fitN(b,st,N)){const p=pcs(a)+pcs(b);if(!best||p<best.p)best={p,A:[[a,N]],B:[[b,N]]}}}}
+ if(best)return best;
+ const BIG=100,nA=cA.length,all=cA.concat(cB);
+ const rows=[];for(let i=0;i<k;i++)rows.push(all.map(c=>c[i]));
+ rows.push(all.map((c,j)=>j<nA?1:0));rows.push(all.map((c,j)=>j<nA?0:1));
+ const lp=lpMax(rows,[...stock,N,N],all.map(c=>BIG-pcs(c)));
+ const dl=Date.now()+ms;
+ const ordered=(L,off)=>L.map((c,i)=>[c,lp.x[off+i]||0]).sort((x,y)=>y[1]-x[1]||pcs(x[0])-pcs(y[0])).map(x=>x[0]);
+ const A=ordered(cA,0),B=ordered(cB,nA);
+ const tryFrom=(fixA,fixB)=>{const st=stock.slice();const pick=[];let rA=N,rB=N;
+  for(const [L,fx,ph] of [[cA,fixA,0],[cB,fixB,1]])for(const [c,q] of fx){if(q<=0)continue;for(let i=0;i<k;i++)st[i]-=c[i]*q;pick.push([ph,c,q]);if(ph)rB-=q;else rA-=q}
+  if(st.some(v=>v<0)||rA<0||rB<0)return null;
+  const fail=new Set();let to=false,nodes=0;
+  const maxFit=c=>{let m=Infinity;for(let i=0;i<k;i++)if(c[i])m=Math.min(m,Math.floor(st[i]/c[i]));return m};
+  const rec=(ph,j,r)=>{if(r===0){if(ph===0)return rec(1,0,rB);return true}
+   if(++nodes%3000===0&&Date.now()>dl)to=true;if(to)return false;
+   const L=ph?B:A;const key=st.join()+'|'+ph+'|'+j+'|'+r;if(fail.has(key))return false;
+   for(let x=j;x<L.length;x++){const c=L[x];const m=Math.min(r,maxFit(c));
+    for(let q=m;q>=1;q--){for(let i=0;i<k;i++)st[i]-=c[i]*q;pick.push([ph,c,q]);
+     if(rec(ph,x+1,r-q))return true;pick.pop();for(let i=0;i<k;i++)st[i]+=c[i]*q;if(to)return false}}
+   fail.add(key);return false};
+  if(!rec(0,0,rA))return null;
+  const merge=ph=>{const m=new Map();for(const p of pick)if(p[0]===ph){const key=p[1].join();m.set(key,[p[1],(m.get(key)?.[1]||0)+p[2]])}return[...m.values()].sort((a,b)=>b[1]-a[1])};
+  return{A:merge(0),B:merge(1)}};
+ const fl=(L,off)=>L.map((c,i)=>[c,Math.floor((lp.x[off+i]||0)+1e-9)]).filter(x=>x[1]>0);
+ return tryFrom(fl(cA,0),fl(cB,nA))||tryFrom([],[])}
+{
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzesP7VxMD2BvhvlW5OSOciHW9CfX_iFYT7mIju-CbSIHNBfmnnfx3cfAzkLcY9D3IQeg/exec';
+const TOKEN='4c387b04332f6093';
+const KNIFE=6,RUBBER=6;
+const GAPS=[[0.3,0.7,0.1],[0.7,1.2,0.2],[1.2,1.7,0.3],[1.7,2.0,0.4]];
+const DEF_RINGS=[[20,20],[10,20],[5,20],[4,21],[3,20],[2,23],[1.9,26],[1.8,25],[1.7,25],[1.6,25]];
+const $=id=>document.getElementById(id);
+const num=v=>{const x=parseFloat(String(v).replace(',','.').trim());return isFinite(x)?x:NaN};
+const f=x=>(Math.round(x*100)/100).toLocaleString('ru-RU',{maximumFractionDigits:2});
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const rings=()=>{const r=ls.get('kn_rings',null);return Array.isArray(r)&&r.length?r:DEF_RINGS};
+function gapFor(t){if(!(t>=0.3-1e-9&&t<=2.0+1e-9))return NaN;for(const g of GAPS)if(t>=g[0]-1e-9&&t<=g[1]+1e-9)return g[2];return NaN}
+function call(params){if(!SCRIPT_URL)return Promise.reject(new Error('nourl'));const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),12000);
+ const q=new URLSearchParams(Object.assign({token:TOKEN},params));
+ return fetch(SCRIPT_URL+'?'+q,{signal:ctl.signal}).then(r=>r.json()).finally(()=>clearTimeout(tm))}
+function loadStock(){return call({action:'stock'}).then(d=>{if(d&&d.ok&&Array.isArray(d.rings)){ls.set('kn_rings',d.rings);return true}return false})}
+/* views */
+const views={calc:'',stock:'Склад',hist:'История'};
+function show(v){for(const k in views)$('v-'+k).hidden=k!==v;$('title').textContent=views[v];$('back').hidden=v==='calc';closeMenu();
+ if(v==='stock')openStock();if(v==='hist')openHist();window.scrollTo(0,0)}
+function closeMenu(){$('menu').hidden=true;$('veil').hidden=true}
+$('burger').onclick=()=>{const h=$('menu').hidden;$('menu').hidden=!h;$('veil').hidden=!h};
+$('veil').onclick=closeMenu;$('back').onclick=()=>show('calc');
+$('menu').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.go)});
+/* calc */
+const T=$('t'),W=$('w'),N=$('n');
+[T,W,N].forEach(el=>{el.addEventListener('focus',()=>el.select());el.addEventListener('input',()=>{el.classList.remove('bad');if(el===T){const t=num(T.value);T.classList.toggle('bad',T.value.trim()!==''&&t!==0&&!isFinite(gapFor(t)))}})});
+const fmtSet=(c,sizes)=>{const p=[];c.forEach((k,i)=>{for(let j=0;j<k;j++)p.push(f(sizes[i]/100))});return p.join(' + ')};
+function clearRes(){$('ra').innerHTML=$('rb').innerHTML='<li class="empty">—</li>';$('sa').textContent=$('sb').textContent=''}
+$('f').addEventListener('submit',e=>{e.preventDefault();$('err').hidden=true;
+ const t=num(T.value),w=num(W.value),n=parseInt(N.value,10),gap=gapFor(t);let bad=false;
+ if(!isFinite(gap)){T.classList.add('bad');bad=true}if(!(w>0)){W.classList.add('bad');bad=true}if(!(n>0)){N.classList.add('bad');bad=true}
+ if(bad){clearRes();return}
+ const O=w-2*RUBBER,I=w-2*KNIFE-gap;
+ if(!(O>0&&I>0)){clearRes();$('err').textContent='Слишком маленькая ширина.';$('err').hidden=false;return}
+ $('go').disabled=true;$('go').textContent='Считаю…';
+ setTimeout(()=>{try{
+  const r=rings().filter(x=>x[0]>0&&x[1]>0).sort((a,b)=>b[0]-a[0]);const sizes=r.map(x=>Math.round(x[0]*100)),stock=r.map(x=>Math.floor(x[1]));
+  const tA=Math.round(O*100),tB=Math.round(I*100);
+  let res=null;const cA=combos(sizes,stock,tA,4000).list,cB=combos(sizes,stock,tB,4000).list;
+  if(cA.length&&cB.length){const k=sizes.length,all=cA.concat(cB),rows=[];for(let i=0;i<k;i++)rows.push(all.map(c=>c[i]));
+   rows.push(all.map((c,j)=>j<cA.length?1:-1));
+   const ub=lpMax(rows,[...stock,0],all.map((c,j)=>j<cA.length?1:0)).v;
+   if(n<=Math.floor(ub+1e-6))res=findSets(sizes,stock,tA,tB,n,4000)}
+  $('sa').textContent=f(O)+' мм';$('sb').textContent=f(I)+' мм';
+  if(res){$('ra').innerHTML=res.A.map(([c,q])=>`<li><span class="q">${q} шт.</span><span>${fmtSet(c,sizes)}</span></li>`).join('');
+   $('rb').innerHTML=res.B.map(([c,q])=>`<li><span class="q">${q} шт.</span><span>${fmtSet(c,sizes)}</span></li>`).join('')}
+  else{clearRes();const m=plan(sizes,stock,tA,tB,999).N;$('err').textContent=`Не хватает колец на ${n} шт. Максимум: ${m} шт.`;$('err').hidden=false}
+ }catch(err){clearRes();$('err').textContent='Ошибка расчёта.';$('err').hidden=false}
+ $('go').disabled=false;$('go').textContent='Рассчитать'},30)});
+/* pin */
+function getPin(){const p=ls.get('kn_pin','');if(p)return Promise.resolve(p);
+ return new Promise(res=>{$('pi').value='';$('pe').textContent='';$('pin').hidden=false;setTimeout(()=>$('pi').focus(),50);
+  $('pf').onsubmit=e=>{e.preventDefault();const v=$('pi').value.trim();if(!v)return;$('pin').hidden=true;res(v)};
+  $('pc').onclick=()=>{$('pin').hidden=true;res(null)}})}
+function badPin(){ls.set('kn_pin','')}
+/* stock */
+let edit=[];
+function drawStock(){$('rings').innerHTML=edit.map((r,i)=>`<tr><td><input data-i="${i}" data-k="0" inputmode="decimal" value="${isFinite(r[0])?f(r[0]):''}" aria-label="Размер"></td><td><input data-i="${i}" data-k="1" inputmode="numeric" value="${isFinite(r[1])?r[1]:''}" aria-label="Количество"></td><td><button class="x" type="button" data-del="${i}" aria-label="Удалить">×</button></td></tr>`).join('')}
+function openStock(){edit=rings().map(r=>r.slice());drawStock();const s=$('sst');s.className='st';s.textContent='Обновляю…';
+ loadStock().then(ok=>{edit=rings().map(r=>r.slice());drawStock();s.textContent=ok?'Склад загружен из таблицы.':'';}).catch(()=>{s.className='st err';s.textContent='Нет связи. Показан последний сохранённый склад.'})}
+$('rings').addEventListener('input',e=>{const el=e.target;if(el.dataset.i!=null)edit[+el.dataset.i][+el.dataset.k]=num(el.value)});
+$('rings').addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(b){edit.splice(+b.dataset.del,1);drawStock()}});
+$('add').onclick=()=>{edit.push([NaN,NaN]);drawStock();const l=$('rings').querySelectorAll('input');l[l.length-2].focus()};
+$('save').onclick=async()=>{const s=$('sst');const clean=edit.filter(r=>r[0]>0&&r[1]>=0).map(r=>[r[0],Math.floor(r[1])]);
+ if(!clean.length){s.className='st err';s.textContent='Склад пуст.';return}
+ const pin=await getPin();if(!pin)return;s.className='st';s.textContent='Сохраняю…';$('save').disabled=true;
+ call({action:'setStock',pin,rings:JSON.stringify(clean)}).then(d=>{
+  if(d&&d.ok){ls.set('kn_pin',pin);ls.set('kn_rings',clean);edit=clean.map(r=>r.slice());drawStock();s.className='st ok';s.textContent='Сохранено. У директора обновится при следующем открытии.'}
+  else if(d&&d.error==='pin'){badPin();s.className='st err';s.textContent='Неверный PIN-код.'}
+  else{s.className='st err';s.textContent='Не удалось сохранить.'}})
+ .catch(()=>{s.className='st err';s.textContent='Нет связи. Склад не сохранён.'}).finally(()=>$('save').disabled=false)};
+/* history */
+async function openHist(){const s=$('hst');s.className='st';s.textContent='';$('hl').innerHTML='<li class="empty">Загрузка…</li>';
+ const pin=await getPin();if(!pin){$('hl').innerHTML='<li class="empty">Нужен PIN-код.</li>';return}
+ call({action:'history',pin}).then(d=>{
+  if(d&&d.ok){ls.set('kn_pin',pin);const rows=d.rows||[];
+   $('hl').innerHTML=rows.length?rows.map(r=>{const dt=new Date(r[0]);const ds=isNaN(dt)?String(r[0]):dt.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<li><span class="d">${ds}</span><span class="v">${f(num(r[1]))} мм × ${f(num(r[2]))} мм</span><span class="n">${r[3]} шт.</span></li>`}).join(''):'<li class="empty">Расчётов пока нет.</li>'}
+  else if(d&&d.error==='pin'){badPin();$('hl').innerHTML='<li class="empty">Неверный PIN-код.</li>'}
+  else $('hl').innerHTML='<li class="empty">Не удалось загрузить.</li>'})
+ .catch(()=>{$('hl').innerHTML='<li class="empty">Нет связи с интернетом.</li>'})}
+$('reload').onclick=openHist;
+show('calc');loadStock().catch(()=>{});
+window.addEventListener('online',()=>loadStock().catch(()=>{}));
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script></body></html>
