@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2b3440">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,13 +11,13 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
-:root{--bg:#eef1f4;--panel:#fff;--ink:#1a2028;--mute:#5b6672;--line:#d5dbe1;--steel:#2b3440;--acc:#e4572e;--bad:#d62828;--ok:#2e7d4f}
+:root{color-scheme:dark;--bg:#000;--panel:#15191e;--ink:#f0f2f4;--mute:#9aa6b2;--line:#2e3741;--steel:#000;--field:#0a0c0f;--acc:#e4572e;--bad:#ff5a5a;--ok:#2e7d4f}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 .bar{position:sticky;top:0;z-index:5;background:var(--steel);color:#fff;padding:env(safe-area-inset-top) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));display:flex;align-items:center;min-height:calc(54px + env(safe-area-inset-top))}
 .bar h1{flex:1;margin:0;font-size:19px;font-weight:700}
 .ib{background:transparent;border:0;color:#fff;min-width:48px;min-height:48px;font-size:26px;cursor:pointer;border-radius:8px}
-.menu{position:fixed;z-index:9;right:max(12px,env(safe-area-inset-right));top:calc(54px + env(safe-area-inset-top));background:var(--panel);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);overflow:hidden;min-width:190px}
+.menu{position:fixed;z-index:9;right:max(12px,env(safe-area-inset-right));top:calc(54px + env(safe-area-inset-top));background:var(--panel);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.6);border:1px solid var(--line);overflow:hidden;min-width:190px}
 .menu button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:14px 18px;font-weight:600;font-size:18px;font-family:inherit;color:var(--ink);cursor:pointer}
 .menu button:last-child{border-bottom:0}
 .veil{position:fixed;inset:0;z-index:8}
@@ -25,9 +25,9 @@ main{max-width:520px;margin:0 auto;padding:18px 14px calc(30px + env(safe-area-i
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
 label{display:block;font-weight:600;font-size:16px;margin-bottom:5px}
 .g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
-input{width:100%;font-weight:600;font-size:21px;font-family:inherit;padding:10px 10px;min-height:54px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input{width:100%;font-weight:600;font-size:21px;font-family:inherit;padding:10px 10px;min-height:54px;border:2px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink)}
 input:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-input.bad{border-color:var(--bad);background:#fde8e8;color:var(--bad)}
+input.bad{border-color:var(--bad);background:#3a1414;color:var(--bad)}
 .go{width:100%;font-weight:700;font-size:21px;font-family:inherit;min-height:58px;border:0;border-radius:10px;background:var(--acc);color:#fff;cursor:pointer}
 .go:disabled{opacity:.6}
 .sec{font-weight:700;font-size:19px;font-family:inherit;margin:0 0 8px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
@@ -37,7 +37,7 @@ input.bad{border-color:var(--bad);background:#fde8e8;color:var(--bad)}
 .sets li:first-child{border-top:0}
 .q{font-weight:800;color:var(--acc);white-space:nowrap;min-width:3.6em}
 .empty{color:var(--mute);margin:0}
-.msg{padding:12px 14px;border-radius:10px;background:#fde8e8;color:var(--bad);font-weight:600;margin-bottom:14px}
+.msg{padding:12px 14px;border-radius:10px;background:#3a1414;color:var(--bad);font-weight:600;margin-bottom:14px}
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{font-size:14px;color:var(--mute);text-align:left;font-weight:600;padding:0 4px 6px}
 .tbl td{padding:4px}
@@ -49,7 +49,7 @@ input.bad{border-color:var(--bad);background:#fde8e8;color:var(--bad)}
 .hist li:first-child{border-top:0}
 .hist .d{color:var(--mute);font-size:14px;grid-column:1/-1}
 .hist .v{font-size:17px}.hist .n{font-weight:800;color:var(--acc);font-size:20px;white-space:nowrap}
-.dlg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+.dlg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px}
 .dlg .card{width:100%;max-width:340px;margin:0}
 .row{display:flex;gap:10px;margin-top:12px}.row button{flex:1}
 [hidden]{display:none!important}
@@ -167,7 +167,7 @@ function findSets(sizes,stock,tA,tB,N,ms){
 {
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzesP7VxMD2BvhvlW5OSOciHW9CfX_iFYT7mIju-CbSIHNBfmnnfx3cfAzkLcY9D3IQeg/exec';
 const TOKEN='4c387b04332f6093';
-const KNIFE=6,RUBBER=6;
+const KNIFE=6,RUBBER=6,MAX_PASY=20,MAX_SZER=605;
 const GAPS=[[0.3,0.7,0.1],[0.7,1.2,0.2],[1.2,1.7,0.3],[1.7,2.0,0.4]];
 const DEF_RINGS=[[20,20],[10,20],[5,20],[4,21],[3,20],[2,23],[1.9,26],[1.8,25],[1.7,25],[1.6,25]];
 const $=id=>document.getElementById(id);
@@ -197,6 +197,8 @@ $('f').addEventListener('submit',e=>{e.preventDefault();$('err').hidden=true;
  const t=num(T.value),w=num(W.value),n=parseInt(N.value,10),gap=gapFor(t);let bad=false;
  if(!isFinite(gap)){T.classList.add('bad');bad=true}if(!(w>0)){W.classList.add('bad');bad=true}if(!(n>0)){N.classList.add('bad');bad=true}
  if(bad){clearRes();return}
+ const lim=Math.min(MAX_PASY,Math.floor(MAX_SZER/w+1e-9));
+ if(n>lim){N.classList.add('bad');clearRes();$('err').textContent=n>MAX_PASY?`Максимум ${MAX_PASY} полос.`:`${n} × ${f(w)} = ${f(n*w)} мм, максимум ${MAX_SZER} мм. Можно не больше ${lim} шт.`;$('err').hidden=false;return}
  const O=w-2*RUBBER,I=w-2*KNIFE-gap;
  if(!(O>0&&I>0)){clearRes();$('err').textContent='Слишком маленькая ширина.';$('err').hidden=false;return}
  $('go').disabled=true;$('go').textContent='Считаю…';
@@ -211,7 +213,7 @@ $('f').addEventListener('submit',e=>{e.preventDefault();$('err').hidden=true;
   $('sa').textContent=f(O)+' мм';$('sb').textContent=f(I)+' мм';
   if(res){$('ra').innerHTML=res.A.map(([c,q])=>`<li><span class="q">${q} шт.</span><span>${fmtSet(c,sizes)}</span></li>`).join('');
    $('rb').innerHTML=res.B.map(([c,q])=>`<li><span class="q">${q} шт.</span><span>${fmtSet(c,sizes)}</span></li>`).join('')}
-  else{clearRes();const m=plan(sizes,stock,tA,tB,999).N;$('err').textContent=`Не хватает колец на ${n} шт. Максимум: ${m} шт.`;$('err').hidden=false}
+  else{clearRes();const m=plan(sizes,stock,tA,tB,lim).N;$('err').textContent=`Не хватает колец на ${n} шт. Максимум: ${m} шт.`;$('err').hidden=false}
  }catch(err){clearRes();$('err').textContent='Ошибка расчёта.';$('err').hidden=false}
  $('go').disabled=false;$('go').textContent='Рассчитать'},30)});
 /* pin */

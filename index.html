@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="pl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#2b3440">
+<meta name="theme-color" content="#000000">
 <title>Kalkulator pasów</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{--bg:#eef1f4;--panel:#fff;--ink:#1a2028;--mute:#5b6672;--line:#d5dbe1;--steel:#2b3440;--acc:#e4572e;--bad:#d62828}
+:root{color-scheme:dark;--bg:#000;--panel:#15191e;--ink:#f0f2f4;--mute:#9aa6b2;--line:#2e3741;--steel:#000;--field:#0a0c0f;--acc:#e4572e;--bad:#ff5a5a}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column}
@@ -16,9 +16,9 @@ main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:2
 .card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
 label{display:block;font-weight:600;font-size:17px;margin-bottom:6px}
 .field{margin-bottom:18px}
-input{width:100%;font:600 24px system-ui,sans-serif;padding:12px 14px;min-height:58px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input{width:100%;font:600 24px system-ui,sans-serif;padding:12px 14px;min-height:58px;border:2px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink)}
 input:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-input.bad{border-color:var(--bad);background:#fde8e8;color:var(--bad)}
+input.bad{border-color:var(--bad);background:#3a1414;color:var(--bad)}
 button{width:100%;font:700 22px system-ui,sans-serif;min-height:60px;border:0;border-radius:10px;background:var(--acc);color:#fff;cursor:pointer}
 button:disabled{opacity:.6}
 .res{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
@@ -74,7 +74,7 @@ function plan(sizes,stock,tA,tB,limit){
 {
 const SCRIPT_URL='https://script.google.com/macros/s/AKfycbzesP7VxMD2BvhvlW5OSOciHW9CfX_iFYT7mIju-CbSIHNBfmnnfx3cfAzkLcY9D3IQeg/exec';
 const TOKEN='4c387b04332f6093';
-const KNIFE=6,RUBBER=6;
+const KNIFE=6,RUBBER=6,MAX_PASY=20,MAX_SZER=605;
 const GAPS=[[0.3,0.7,0.1],[0.7,1.2,0.2],[1.2,1.7,0.3],[1.7,2.0,0.4]];
 const DEF_RINGS=[[20,20],[10,20],[5,20],[4,21],[3,20],[2,23],[1.9,26],[1.8,25],[1.7,25],[1.6,25]];
 const $=id=>document.getElementById(id);
@@ -102,7 +102,8 @@ $('f').addEventListener('submit',e=>{e.preventDefault();
  go.disabled=true;go.textContent='Liczę…';
  setTimeout(()=>{let n=0;try{const O=W-2*RUBBER,I=W-2*KNIFE-gap;
    if(O>0&&I>0){const r=rings().filter(x=>x[0]>0&&x[1]>0).sort((a,b)=>b[0]-a[0]);
-    n=plan(r.map(x=>Math.round(x[0]*100)),r.map(x=>Math.floor(x[1])),Math.round(O*100),Math.round(I*100),999).N}}catch(err){n=0}
+    const lim=Math.min(MAX_PASY,Math.floor(MAX_SZER/W+1e-9));
+    n=lim>0?plan(r.map(x=>Math.round(x[0]*100)),r.map(x=>Math.floor(x[1])),Math.round(O*100),Math.round(I*100),lim).N:0}}catch(err){n=0}
   out.textContent=n;go.disabled=false;go.textContent='Oblicz';log(t,W,n)},30)});
 window.addEventListener('online',()=>{syncRings();flush()});
 syncRings();flush();
