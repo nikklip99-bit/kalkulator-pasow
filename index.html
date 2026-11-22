@@ -1,5 +1,7 @@
 <!DOCTYPE html>
+<!-- Kalkulator pasów. Autor: Mykyta Klipilin, 2026. Wszelkie prawa zastrzeżone. -->
 <html lang="pl"><head><meta charset="utf-8">
+<meta name="author" content="Mykyta Klipilin">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#000000">
 <title>Kalkulator pasów</title>
@@ -24,14 +26,16 @@ button:disabled{opacity:.6}
 .res{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
 .res label{color:var(--mute)}
 .out{font:800 clamp(64px,22vw,96px)/1 system-ui,sans-serif;color:var(--acc);font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#15191e;color:#f0f2f4;border:1px solid #2e3741;padding:12px 18px;border-radius:10px;font-weight:600;white-space:nowrap;z-index:9}
 </style></head><body>
 <div class="top"></div>
 <main><form class="card" id="f" autocomplete="off">
- <div class="field"><label for="t">Grubość, mm</label><input id="t" inputmode="decimal" value="0"></div>
+ <div class="field"><label for="t">Grubość, <span id="mm">mm</span></label><input id="t" inputmode="decimal" value="0"></div>
  <div class="field"><label for="w">Szerokość pasa, mm</label><input id="w" inputmode="decimal" value="0"></div>
  <button id="go" type="submit">Oblicz</button>
  <div class="res"><label>Ilość pasów</label><div class="out" id="n" aria-live="polite">0</div></div>
 </form></main>
+<div class="toast" id="au" hidden></div>
 <script>
 function combos(sizes,stock,t,cap){const res=[];const cur=new Array(sizes.length).fill(0);let over=false;
  (function rec(i,rem){if(over)return;if(rem===0){res.push(cur.slice());if(res.length>cap)over=true;return;}if(i===sizes.length)return;
@@ -105,6 +109,9 @@ $('f').addEventListener('submit',e=>{e.preventDefault();
     const lim=Math.min(MAX_PASY,Math.floor(MAX_SZER/W+1e-9));
     n=lim>0?plan(r.map(x=>Math.round(x[0]*100)),r.map(x=>Math.floor(x[1])),Math.round(O*100),Math.round(I*100),lim).N:0}}catch(err){n=0}
   out.textContent=n;go.disabled=false;go.textContent='Oblicz';log(t,W,n)},30)});
+{let c=0,last=0,tm;const mm=$('mm');
+ mm.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const now=Date.now();c=now-last<1500?c+1:1;last=now;
+  if(c>=7){c=0;const a=$('au');a.textContent='Autor: '+String.fromCharCode(77,121,107,121,116,97,32,75,108,105,112,105,108,105,110)+' © 2026';a.hidden=false;clearTimeout(tm);tm=setTimeout(()=>a.hidden=true,3500)}})}
 window.addEventListener('online',()=>{syncRings();flush()});
 syncRings();flush();
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
